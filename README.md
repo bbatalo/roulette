@@ -1,3 +1,2 @@
 # roulette
-
-Using block chain
+A smart contract for rulette.
