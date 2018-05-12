@@ -1,9 +1,10 @@
+pragma solidity ^0.4.23;
 contract Rulette{
     
-    struct Player{
+ /*   struct Player{
      string name;
      uint256 money;
-    }
+    } */
     
     uint256 idCounter;
     struct Acount{
@@ -12,32 +13,35 @@ contract Rulette{
         int256 amount;
     }
     Acount[] acounts;
-    
+    /*
     struct Stake{
         uint256 ruletNumber;
         uint256 amount;
         string name;
         uint time;
-    }
-    
+    } */
+    /*
     struct Winner{
         string name;
         uint256 amount;
-    }
+    } */
     
-    Stake[]  stakes;
+    //Stake[]  stakes;
     
-    function  Rulette() public{
+   function Rulette() public{
         idCounter=0;
-    }
+    } /*
+    consrtuctor(){
+        idCounter=0;
+    } */
     
-    function Register(string userName, int256 userMoney) public returns(uint256){
+    function register(string userName, int256 userMoney) public returns(uint256){
         Acount memory  a=Acount({name: userName, amount: userMoney, id: idCounter++});
         acounts.push(a);
         return idCounter;
     }
     
-    function GetState(uint256 id) public returns(int256){
+    function getState(uint256 id) public view returns(int256){
         Acount memory foundAcount;
         int256 money=-1;
         for(uint256 i=0; i<acounts.length; i++){
@@ -51,8 +55,9 @@ contract Rulette{
         
         return money;
     }
-    
-    function GetWinner() public returns (string){
+   
+/*   
+    function getWinner() public  view returns (string){
         string[] winnersName;
         Winner[] winners;
         var stakesLength= stakes.length;
@@ -69,11 +74,12 @@ contract Rulette{
         
         return winnerName;   
     }
-   
-    function Invest(uint256 ruletNumber1, int256 amount, uint256 id) public returns(uint256 indexValue,uint256 gottenNumber,int  amountChanged){
+    */
+	
+    function invest(uint256 ruletNumber1, int256 amount, uint256 id) public returns(uint256 indexValue,uint256 gottenNumber,int  amountChanged){
         gottenNumber= randomFunction();
         indexValue=getIndex(id);
-        var value=indexValue;
+      
       
        require(ruletNumber1>0 && ruletNumber1<37 && amount>0 );
      
@@ -89,16 +95,16 @@ contract Rulette{
     }
     
 
-    
+    /*
     function invest2(uint256 ruletNumber1, uint256 stake1, string name1) public {
         if(ruletNumber1>0 && ruletNumber1<37)
         {
             Stake memory s=Stake({ruletNumber: ruletNumber1, amount: stake1, name: name1, time: now});
             stakes.push(s);
         }
-    }
-    
-    function isRegister(uint256 id) private returns(bool){
+    } */
+    /*
+    function isRegister(uint256 id) private view returns(bool){
           for(uint256 i=0; i< acounts.length; i++){
             if(acounts[i].id==id){
                return true;
@@ -106,9 +112,9 @@ contract Rulette{
         }
         
         return false;
-    }
+    } */
     
-    function getIndex(uint256 id) public returns(uint256){
+    function getIndex(uint256 id) public view returns(uint256){
         uint256 index;
         
         for(uint256 i=0; i< acounts.length; i++){
@@ -121,7 +127,7 @@ contract Rulette{
         return index;
     }
     
-    function randomFunction() returns(uint256){
+    function randomFunction() private view returns(uint256){
         uint256 timeOfForthPlayer;
         uint256 ranodmNumber;
         if(stakes.length>4){
