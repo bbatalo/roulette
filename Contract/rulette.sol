@@ -1,6 +1,7 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.21;
+import "github.com/Arachnid/solidity-stringutils/src/strings.sol";
 contract Rulette{
-    
+     using strings for *;
  /*   struct Player{
      string name;
      uint256 money;
@@ -12,6 +13,7 @@ contract Rulette{
         string name;
         int256 amount;
     }
+    
     Acount[] acounts;
     /*
     struct Stake{
@@ -34,6 +36,32 @@ contract Rulette{
     consrtuctor(){
         idCounter=0;
     } */
+    function splitString(string input) public returns(string){
+       /// var s = "www.google.com".toSlice();
+        var s=input.toSlice();
+        var delim = ";".toSlice();
+        var parts = new string[](s.count(delim) + 1);
+        var parts2=new string[](2*parts.length);
+        for(uint i = 0; i < parts.length; i++) {
+            var el=s.split(delim);
+            parts[i] = s.split(delim).toString();
+         //   var delimLine="-".toSlice();
+          /*  for(uint j=0; j<2; j++){
+                parts2[i] = el.split(delimLine).toString();
+            } */
+        }
+        
+        uint k=0;
+        for(uint j=0; j<parts.length; j++){
+            var ss=parts[j].toSlice();
+            var delimLine = "-".toSlice();
+            var elem=ss.split(delimLine);
+            
+            parts2[k++]=elem.split(delimLine).toString();
+        }
+        
+        return parts2[1];
+    }
     
     function register(string userName, int256 userMoney) public returns(uint256){
         Acount memory  a=Acount({name: userName, amount: userMoney, id: idCounter++});
@@ -42,16 +70,9 @@ contract Rulette{
     }
     
     function getState(uint256 id) public view returns(int256){
-        Acount memory foundAcount;
         int256 money=-1;
-        for(uint256 i=0; i<acounts.length; i++){
-            if(acounts[i].id==id){
-                foundAcount = acounts[i];
-                money=acounts[i].amount;
-              
-                break;
-            }
-        }
+        id--;
+        money = acounts[id].amount;
         
         return money;
     }
@@ -128,15 +149,15 @@ contract Rulette{
     }
     
     function randomFunction() private view returns(uint256){
-        uint256 timeOfForthPlayer;
+      //  uint256 timeOfForthPlayer;
         uint256 ranodmNumber;
-        if(stakes.length>4){
+   /*     if(stakes.length>4){
             timeOfForthPlayer=stakes[4].time;
             ranodmNumber = uint8(uint256(keccak256(block.timestamp, timeOfForthPlayer))%37);
         }
-        else{
+        else{ */
             ranodmNumber = uint8(uint256(keccak256(block.timestamp, block.difficulty))%37);
-        }
+       // }
         
         return ranodmNumber;
     }
