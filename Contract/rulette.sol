@@ -5,6 +5,7 @@ contract Rulette{
 
     
     uint256 idCounter;
+    
     struct Acount{
         uint256 id;
         string name;
@@ -78,7 +79,7 @@ contract Rulette{
         {
              Acount memory  a=Acount({name: userName, amount: userMoney, id: idCounter++});
              acounts.push(a);
-             registerMessageInfo = "User is successful registered.";
+             registerMessageInfo = "User is successfully registered.";
              userId = idCounter;
            
         }else
@@ -128,43 +129,7 @@ contract Rulette{
             return 0;
         }
     }
-/*	
-    function invest(uint256 ruletNumber1, int256 amount, uint256 id) public returns(uint256 indexValue,uint256 gottenNumber,int  amountChanged){
-        gottenNumber= randomFunction();
-        indexValue=getIndex(id);
-      
-      
-       require(ruletNumber1>0 && ruletNumber1<37 && amount>0 );
-     
-        if(gottenNumber == ruletNumber1 && acounts[indexValue].amount>=amount)
-        {
-           acounts[indexValue].amount+=amount*36;
-        }
-        
-      acounts[indexValue].amount -= amount;
-      amountChanged=acounts[indexValue].amount;
-     
-    }
-    */
 
-   
-    
-    
-    function getIndex(uint256 id) private view returns(uint256){
-        uint256 index;
-        
-        for(uint256 i=0; i< acounts.length; i++)
-        {
-            if(acounts[i].id==id)
-            {
-                index=i;
-                break;
-            }
-        }
-        
-        return index;
-    }
-    
     function isFoundNumber(uint[] rulletNumbers, uint fountNumber) pure private returns(bool, uint){
         for(uint i=0; i<rulletNumbers.length; i++)
         {
@@ -183,6 +148,17 @@ contract Rulette{
         ranodmNumber = uint8(uint256(keccak256(block.timestamp, block.difficulty))%37);
       
         return ranodmNumber;
+    }
+    
+    function addMoneyOnAcount(string userName, int moneyAmount) public {
+        bool flagIsNotRegistered;
+        uint acountIndex;
+        
+        (flagIsNotRegistered, acountIndex) = isUserNameUnique(userName);
+        
+        if(!flagIsNotRegistered){
+            acounts[acountIndex].amount +=moneyAmount;
+        }
     }
 
 }
