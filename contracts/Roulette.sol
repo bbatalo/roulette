@@ -1,28 +1,28 @@
-pragma solidity ^0.4.21;
-
-import "github.com/Arachnid/solidity-stringutils/src/strings.sol";  // for what do we use this library?
+pragma solidity ^0.4.21;  // solhint-disable-line
 
 
 contract Roulette {
-    using strings for *;
-
-    uint256 idCounter;  // should this field be public or private? my guess is private
+    uint256 private idCounter;  // should this field be public or private? my guess is private
     
-    struct Acount {
+    struct Account {
         uint256 id;
         string name;
         int256 amount;  // uint256? we should also package variables of the same type together (optimization)
     }
     
-    Acount[] acounts;   // is this public?
+    Account[] private accounts;   // is this public?
+  
   
     function Roulette() public {
         idCounter = 0;
-    } 
-   
+    }
+    
+    
+    
     // fix spelling of variable names
     // should the function return info message, or just require certain conditions?
     // we also need an event to notify frontend
+    /*
     function getInvest(string userName, uint[] rulletNumber, int[] money) public returns (string infoMessage, uint256 randNumeber) { // solhint-disable-line
 
         // can this be uint?
@@ -42,7 +42,7 @@ contract Roulette {
         } else if (!flagIsNotRegistered && rulletNumber.length != money.length) {
             infoMessage = "User is  registered but arrays arent same size.";
         } else {
-            Acount storage acount = acounts[acountIndex];   // spelling
+            Account storage acount = accounts[acountIndex];   // spelling
             // separate this into two functions?
             // investing could be one function, and the drawing of numbers could be another (enable group play?)
             if (sumMoney <= acount.amount) {
@@ -66,8 +66,8 @@ contract Roulette {
         uint acountIndex;
         (flagIsUnique, acountIndex) = isUserNameUnique(userName);   // spelling
         if (flagIsUnique) {
-            Acount memory a = Acount({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
-            acounts.push(a);
+            Account memory a = Account({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
+            accounts.push(a);
             registerMessageInfo = "User is successfully registered.";
             userId = idCounter;
         } else {
@@ -85,7 +85,7 @@ contract Roulette {
         
         int256 money = -1;  // uint?
         if (!flagIsUnique) {
-            money = acounts[acountIndex].amount;    // spelling
+            money = accounts[acountIndex].amount;    // spelling
         }
        
         return money;
@@ -99,7 +99,7 @@ contract Roulette {
         (flagIsNotRegistered, acountIndex) = isUserNameUnique(userName);    // spelling
         
         if (!flagIsNotRegistered) {
-            acounts[acountIndex].amount += moneyAmount; // spelling
+            accounts[acountIndex].amount += moneyAmount; // spelling
         }
     }
     
@@ -115,8 +115,8 @@ contract Roulette {
 
     // name convention
     function isUserNameUnique(string userName) private view returns (bool, uint) {
-        for (uint i = 0; i < acounts.length; i++) {
-            if (keccak256(acounts[i].name) == keccak256(userName)) {
+        for (uint i = 0; i < accounts.length; i++) {
+            if (keccak256(accounts[i].name) == keccak256(userName)) {
                 return (false, i);
             }
         }
@@ -156,7 +156,7 @@ contract Roulette {
 
         return ranodmNumber;
     }
-    
+    */
     
 
 }
