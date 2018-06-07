@@ -2,16 +2,17 @@ pragma solidity ^0.4.24;  // solhint-disable-line
 
 
 contract Roulette {
-    uint256 private idCounter;  // should this field be public or private? my guess is private
+    uint256 public idCounter;  // public for testing purposes, switch to private later?
     address public owner;
     
     struct Account {
         uint256 id;
+        uint256 amount;  // uint256? we should also package variables of the same type together (optimization)
         string name;
-        int256 amount;  // uint256? we should also package variables of the same type together (optimization)
+        
     }
     
-    Account[] private accounts;   // is this public?
+    Account[] private players;   // is this public?
   
     
     constructor() public {
@@ -24,13 +25,13 @@ contract Roulette {
     }
 
     // switch to uint?
-    function register(string userName, int256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
+    function register(string userName, uint256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
         bool flagIsUnique;
         uint acountIndex;
         (flagIsUnique, acountIndex) = _isUserNameUnique(userName);   // spelling
         if (flagIsUnique) {
             Account memory a = Account({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
-            accounts.push(a);
+            players.push(a);
             registerMessageInfo = "User is successfully registered.";
             userId = idCounter;
         } else {
@@ -41,8 +42,8 @@ contract Roulette {
 
     // name convention
     function _isUserNameUnique(string userName) private view returns (bool, uint) {
-        for (uint i = 0; i < accounts.length; i++) {
-            if (keccak256(abi.encodePacked(accounts[i].name)) == keccak256(abi.encodePacked(userName))) {
+        for (uint i = 0; i < players.length; i++) {
+            if (keccak256(abi.encodePacked(players[i].name)) == keccak256(abi.encodePacked(userName))) {
                 return (false, i);
             }
         }
