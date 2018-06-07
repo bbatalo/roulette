@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;  // solhint-disable-line
+pragma solidity ^0.4.24;  // solhint-disable-line
 
 
 contract Roulette {
@@ -12,12 +12,37 @@ contract Roulette {
     
     Account[] private accounts;   // is this public?
   
-  
-    function Roulette() public {
+    
+    constructor() public {
         idCounter = 0;
     }
-    
-    
+
+    // switch to uint?
+    function register(string userName, int256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
+        bool flagIsUnique;
+        uint acountIndex;
+        (flagIsUnique, acountIndex) = _isUserNameUnique(userName);   // spelling
+        if (flagIsUnique) {
+            Account memory a = Account({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
+            accounts.push(a);
+            registerMessageInfo = "User is successfully registered.";
+            userId = idCounter;
+        } else {
+            registerMessageInfo = "User isn't registered because his/her username is not unique.";
+            userId = 0;
+        }
+    }
+
+    // name convention
+    function _isUserNameUnique(string userName) private view returns (bool, uint) {
+        for (uint i = 0; i < accounts.length; i++) {
+            if (keccak256(abi.encodePacked(accounts[i].name)) == keccak256(abi.encodePacked(userName))) {
+                return (false, i);
+            }
+        }
+        
+        return (true, 1);
+    }
     
     // fix spelling of variable names
     // should the function return info message, or just require certain conditions?
@@ -60,21 +85,7 @@ contract Roulette {
         }
     }
     
-    // switch to uint?
-    function register(string userName, int256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
-        bool flagIsUnique;
-        uint acountIndex;
-        (flagIsUnique, acountIndex) = isUserNameUnique(userName);   // spelling
-        if (flagIsUnique) {
-            Account memory a = Account({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
-            accounts.push(a);
-            registerMessageInfo = "User is successfully registered.";
-            userId = idCounter;
-        } else {
-            registerMessageInfo = "User isn't register because his/her username is not unique.";
-            userId = 0;
-        }
-    }
+    
 
     // spelling and int to uint
     function getState(string userName) public view returns(int256) {
@@ -113,16 +124,7 @@ contract Roulette {
         return sum;
     }
 
-    // name convention
-    function isUserNameUnique(string userName) private view returns (bool, uint) {
-        for (uint i = 0; i < accounts.length; i++) {
-            if (keccak256(accounts[i].name) == keccak256(userName)) {
-                return (false, i);
-            }
-        }
-        
-        return (true, 1);
-    }
+    
 
     // name convention  
     function findAccountIndexByUserName(string userName) private view returns (uint index) {
