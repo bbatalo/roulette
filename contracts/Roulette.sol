@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;  // solhint-disable-line
 
 contract Roulette {
     uint256 private idCounter;  // should this field be public or private? my guess is private
+    address public owner;
     
     struct Account {
         uint256 id;
@@ -14,7 +15,12 @@ contract Roulette {
   
     
     constructor() public {
+        owner = msg.sender;
         idCounter = 0;
+    }
+
+    function kill() public {
+        if(msg.sender == owner) selfdestruct(owner);
     }
 
     // switch to uint?
