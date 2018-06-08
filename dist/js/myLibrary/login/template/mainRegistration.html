@@ -1,0 +1,68 @@
+
+			<div class='col-xs-6' id='registerPanel'>
+				<form class="form-horizontal" name="registrationForm"  ng-controller="registerController as regCtrl"  novalidate> <!-- ng-controller="registerController as regCtrl" -->
+
+					<div class="row">
+					<div class="col-sm-offset-4 col-sm-4">
+						<h3> Registration </h3>
+					</div>
+					</div>
+
+				  	<div class="form-group">
+				    	<label for="log_username" class="col-sm-3 control-label">username: </label>
+				    	<div class="col-sm-9">
+				      		<input type="text" class="form-control" id="log_username" placeholder="username" ng-model="register.username" required />
+				    	</div>
+				  	</div>
+
+				  	<div class="form-group">
+				    	<label for="log_password" class="col-sm-3 control-label">password: </label>
+				    	<div class="col-sm-9">
+				      		<input type="password" class="form-control" id="log_password" placeholder="password" ng-model="register.password" ng-keyup="regCtrl.matching()" required />
+				    	</div>
+				  	</div>
+
+				  	<div class="form-group">
+				    	<label for="log_password2" class="col-sm-3 control-label">password: </label>
+				    	<div class="col-sm-9">
+				      		<input type="password" class="form-control" id="log_password2" placeholder="password" ng-model="checker.password" ng-keyup="regCtrl.matching()" required />
+				    	</div>
+				  	</div>
+
+				  	<div class="form-group">
+				    	<label for="log_mail" class="col-sm-3 control-label">mail: </label>
+				    	<div class="col-sm-9">
+				      		<input type="email" class="form-control" id="log_mail" placeholder="mail" ng-model="register.mail" required />
+				    	</div>
+				  	</div>
+
+				  	<div class="form-group">
+				    	<label for="log_name" class="col-sm-3 control-label">name: </label>
+				    	<div class="col-sm-9">
+				      		<input type="text" class="form-control" id="log_name" placeholder="name" ng-model="register.name" required />
+				    	</div>
+				  	</div>
+
+				  	<div class="form-group">
+				    	<label for="log_lastname" class="col-sm-3 control-label">surname: </label>
+				    	<div class="col-sm-9">
+				      		<input type="text" class="form-control" id="log_lastname" placeholder="surname" ng-model="register.surname" required />
+				    	</div>
+				  	</div>
+
+				  <div class="form-group">
+				    <div class="col-sm-offset-3 col-sm-9">
+				      <button type="submit" class="btn btn-default" ng-click="regCtrl.registration()" ng-disabled="registrationForm.$invalid || !match">register</button><!--ng-click="regCtrl.registration()" -->
+				    </div>
+				  </div>
+
+				  	<!-- <autentification-modal></autentification-modal> -->
+				
+				</form>
+
+
+
+
+				
+
+			</div>

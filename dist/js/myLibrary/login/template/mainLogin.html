@@ -1,0 +1,38 @@
+
+			<div class='col-xs-6' id='loginPanel'>
+
+				<form class="form-horizontal" name="loginForm" ng-controller="loginController as logCtrl"  novalidate><!--  ng-controller="loginController as logCtrl"-->
+
+					<div class="row">
+					<div class="col-sm-offset-4 col-sm-4">
+						<h3> Login </h3>
+					</div>
+					</div>
+					
+					
+				  	<div class="form-group">
+				    	<label for="log_username" class="col-sm-3 control-label">username: </label>
+				    	<div class="col-sm-9">
+				      		<input type="text" class="form-control" id="log_username" placeholder="username" ng-model="logger.username" required />
+				    	</div>
+				  	</div>
+
+				  	<div class="form-group">
+				    	<label for="log_password" class="col-sm-3 control-label">password: </label>
+				    	<div class="col-sm-9">
+				      		<input type="password" class="form-control" id="log_password" placeholder="password" ng-model="logger.password" required />
+				    	</div>
+				  	</div>
+
+				  <div class="form-group">
+				    <div class="col-sm-offset-3 col-sm-9">
+				      <button type="submit" class="btn btn-default" ng-click="logCtrl.logging()" ng-disabled="loginForm.$invalid">log in</button><!-- ng-click="logCtrl.logging()" -->
+				    </div>
+				  </div>
+
+				  	<!-- <autentification-modal></autentification-modal> -->
+				
+				</form>
+
+
+			</div>

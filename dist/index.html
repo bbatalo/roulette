@@ -1,13 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="app" lang="en">
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+    <!-- basic -->
+    <script type="text/javascript" src="js/vendor/angular.min.js"></script>
+    <script type="text/javascript" src="js/vendor/angular-route.min.js"></script>
+
+    <!-- Cookies -->
+    <script type="text/javascript" src="js/vendor/angular-local-storage.min.js"></script>
+
+
+    <!-- Za bootstrap for angular! -->
+    <!--
+    <script type="text/javascript" src="js/vendor/angular-cookies.min.js"></script>
+    <script type="text/javascript" src="js/vendor/angular-animate.min.js"></script>
+    <script type="text/javascript" src="js/vendor/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    -->
+    <script type="text/javascript" src="js/vendor/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/vendor/bootstrap.min.js"></script>
+
+
+    <!--  toaster -->
+    <link href="css/vendor/toastr.min.css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/vendor/toastr.min.js"></script>
+
+    <!-- bootstrap -->
+    <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="js/vendor/bootstrap.min.js"></script>
+
+    <!-- <script src="../src/build.js"></script> -->
+    <script src="js/myLibrary/cookie/cookieModul.js"></script>
+    <script src="js/index.js"></script>
+    
+   
+    <link href="css/index.css" rel="stylesheet">
+
    <title>Casino Ethereum Dapp</title>
+
 </head>
-<body>
-   <div id="root">CAO POZZZINA</div>
-   <script src="build.js"></script>
+<body ng-controller="svekontroler as sve" class="container">
+
+          <div class="col-md-5" id="gameboard">
+              
+                  <div class="col-md-4 nopadding">
+                    <button class="btn btn-warning button-expanded" ng-click="clearTable()" >
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                  </div>
+              
+                  <div class="col-md-4 nopadding">
+                    <button class="btn button-expanded zeleno" ng-click="numClick(0)">
+                        0 <span class="label label-default" ng-if="bet[0] && bet[0]>0">{{bet[0]}}</span>
+                    </button>
+                  </div>
+                  <div class="col-md-4 nopadding">
+                      <button class="btn btn-warning button-expanded" ng-class="{active: minus}" ng-click="minus = !minus">
+                          <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                      </button>
+                    </div>
+                  
+                
+                <div class="col-md-4 nopadding" ng-repeat="polje in tabela">
+                  <button class="btn button-expanded" ng-class='{crveno: polje["col"]=="r", crno: polje["col"]=="b" }'  ng-click="numClick(polje['num'])">
+                    {{polje['num']}} <span class="label label-default" ng-if="bet[polje['num']] && bet[polje['num']]>0">{{bet[polje['num']]}}</span>
+                  </button>
+                </div>
+
+          </div> <!-- gameboard-->
+
+
+
+
+
+
+
+
+
+          <div class="col-md-7" id="controlboard">
+
+            <br/>
+
+            <div class="input-group" ng-show="!pkey">
+                  <span class="input-group-addon labela">
+                      Пријава - Унесите Ваш јавни кључ
+                  </span>
+                  <input type="text" class="form-control ulazi" placeholder="Јавни кључ:" ng-model="newpk" />
+                  <span class="input-group-btn">
+                      <button class="btn btn-default btn-success button-controling" type="button" ng-click="login()">Пријава</button>
+                  </span>
+            </div>
+            
+            <h3 class="labela" ng-show="pkey"> Ваш јавни кључ : {{pkey}}</h3>
+            <div class="input-group" ng-show="pkey">
+                <span class="input-group-addon labela">
+                    На рачуну имате: <em></em><strong>{{bilans}}</strong></em> wei-a!
+                </span>
+                <button class="btn btn-default form-control btn-danger button-controling" type="button" ng-click="logout()">Одјава</button>
+            </div>
+
+          
+            <br/>
+
+            
+            <div class="input-group" ng-show="pkey">
+              <span class="input-group-btn">
+                  <button class="btn btn-default btn-success button-controling" type="button" ng-click="transfer(svota)">Доплата</button>
+              </span>
+                <input type="text" class="form-control ulazi" placeholder="Свота" ng-model="svota"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-default btn-danger button-controling" type="button" ng-click="transfer(-svota)">Исплата</button>
+                </span>
+            </div>
+
+
+           <hr>
+
+           <br>
+
+            <div class="input-group " ng-show="pkey">
+                <span class="input-group-addon labela">Улажи по:</span>
+                
+                  <span class="input-group-btn">
+                      <button ng-repeat="cip in cipovi" 
+                                        class="btn form-control btn-warning" ng-class="{active: cip==korak}"
+                                        ng-click="setKorak(cip)">
+                            {{cip}}
+                      </button>
+                  </span>     
+                
+                <span class="input-group-addon labela">wei-a.</span>           
+            </div><!-- /input-group -->
+            
+            <br><br>
+            <div class="input-group" ng-show="pkey">
+                <span class="input-group-addon labela">
+                    Уложено <em></em><strong>{{total}}</strong></em> од укупно <em></em><strong>{{bilans}}</strong></em> wei-a!
+                </span>
+                <button class="btn form-control btn-info button-controling" type="button">Покрени</button>
+            </div>
+
+          </div> <!-- controlboard-->
+
+            
+        
+        
+              
+    
+
+
+   
 </body>
 </html>

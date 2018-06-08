@@ -1,0 +1,87 @@
+		#controlboard{
+			border-left-width: 1px;
+			border-left-color:white;
+			border-left-style: solid;
+			/*text-align: center;*/
+		}
+
+		.button-expanded{
+			display: block; 
+			width: 100%; 
+			height: 100%;
+			color : white;
+			font-weight: bold;
+			margin: 0%;
+			padding: 1pc;
+			border-color: tan;
+		}
+
+		.button-controling{
+			color : white;
+			font-weight: bold;
+		}
+
+		.nopadding{
+			padding: 0%;
+		}
+		.noborder{
+			border-width: 0pc;
+			border-color: tan;
+		}
+
+		.crveno{
+			background-color: red
+		}
+		.crno{
+			background-color: black
+		}
+		.zeleno{
+			background-color: green
+		}
+		.bold {
+			font-weight: bold;
+		}
+
+		.ulazi{
+			/* padding: 1.65pc; */
+			background-color: sienna;
+			color : white;
+		}
+
+		.labela{
+			background-color: tan;
+			color : white;
+		}
+
+		.toright{
+			float : right
+		}
+
+		.hidden{
+			display: none
+		}
+
+		#controlboard *:not(hr){
+			border-color: tan;
+		}
+		
+		body{
+			background-color: tan
+		}
+
+
+
+
+		ul {
+		  list-style-type: none;
+		}
+
+		form.form-inline{
+			margin: 15px;
+			/*text-align: center;*/
+		}
+
+		.timeLabel {
+			position: relative;
+			top: 40px;
+		}
