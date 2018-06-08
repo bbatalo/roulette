@@ -1,37 +1,59 @@
-pragma solidity ^0.4.24;  // solhint-disable-line
+pragma solidity ^0.4.24;
 
 
 contract Roulette {
-    uint256 public idCounter;  // public for testing purposes, switch to private later?
+
     address public owner;
+
+    mapping(address => uint) private balances;
     
-    struct Account {
-        uint256 id;
-        uint256 amount;  // uint256? we should also package variables of the same type together (optimization)
-        string name;
-        
-    }
-    
-    Account[] private players;   // is this public?
+    // add constraints? min amount of deposit, max amount of deposit, etc...
   
     
     constructor() public {
         owner = msg.sender;
-        idCounter = 0;
+    }
+    
+    function getBalance() public view returns (uint256) {
+        require(msg.sender == owner, "Only the owner of the contract can view the balance.");
+        
+        return address(this).balance;
+    }
+    
+    function refill() public payable {
+        require(msg.sender == owner, "Only the owner of the contract can update the balance.");
     }
 
-    function kill() public {
-        if(msg.sender == owner) selfdestruct(owner);
-    }
+    
 
+    function check(address player) public view returns (uint balance) {
+        return balances[player];
+    }
+    
+    function deposit() public payable {
+        balances[msg.sender] = balances[msg.sender] + msg.value;
+    }
+    
+    // infinite gas requirement for some reason
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] - amount >= 0);
+        balances[msg.sender] = balances[msg.sender] - amount;
+        
+        msg.sender.transfer(amount);
+    }
+    
+    
+    
+    
+    /*
     // switch to uint?
-    function register(string userName, uint256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
+    function register(string userName, int256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
         bool flagIsUnique;
         uint acountIndex;
         (flagIsUnique, acountIndex) = _isUserNameUnique(userName);   // spelling
         if (flagIsUnique) {
             Account memory a = Account({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
-            players.push(a);
+            accounts.push(a);
             registerMessageInfo = "User is successfully registered.";
             userId = idCounter;
         } else {
@@ -39,17 +61,20 @@ contract Roulette {
             userId = 0;
         }
     }
-
+    */
+    
+    
+    /*
     // name convention
     function _isUserNameUnique(string userName) private view returns (bool, uint) {
-        for (uint i = 0; i < players.length; i++) {
-            if (keccak256(abi.encodePacked(players[i].name)) == keccak256(abi.encodePacked(userName))) {
+        for (uint i = 0; i < accounts.length; i++) {
+            if (keccak256(abi.encodePacked(accounts[i].name)) == keccak256(abi.encodePacked(userName))) {
                 return (false, i);
             }
         }
         
         return (true, 1);
-    }
+    }*/
     
     // fix spelling of variable names
     // should the function return info message, or just require certain conditions?
