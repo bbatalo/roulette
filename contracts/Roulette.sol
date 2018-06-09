@@ -45,6 +45,7 @@ contract Roulette {
     // infinite gas requirement for some reason
     function withdraw(uint amount) public returns (uint256) {
         require(balances[msg.sender] - amount >= 0);
+        
         balances[msg.sender] = balances[msg.sender] - amount;
         
         msg.sender.transfer(amount - casinoTax);
@@ -70,7 +71,7 @@ contract Roulette {
             }
         }
         
-        msg.sender.transfer(winnings);
+        balances[msg.sender] = balances[msg.sender] + winnings;
     }
     
     function _sum(uint256[] money) public pure returns (uint256 sum) {
@@ -82,7 +83,7 @@ contract Roulette {
     }
     
     function _randomGenerator() private view returns (uint8 randomNumber) {
-        randomNumber = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % casinoRoulette);
+        randomNumber = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % (casinoRoulette + 1));
     }
     
     // fix spelling of variable names

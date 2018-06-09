@@ -4,6 +4,210 @@
     var modul = angular.module('app', ['cookieModul']);
         
     modul.controller('svekontroler',['$scope','$http','RedirectionFactory', function($scope, $http, RedirectionFactory){
+
+            var abi = [
+                {
+                  "constant": true,
+                  "inputs": [],
+                  "name": "casinoRoulette",
+                  "outputs": [
+                    {
+                      "name": "",
+                      "type": "uint256"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "view",
+                  "type": "function"
+                },
+                {
+                  "constant": true,
+                  "inputs": [],
+                  "name": "owner",
+                  "outputs": [
+                    {
+                      "name": "",
+                      "type": "address"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "view",
+                  "type": "function"
+                },
+                {
+                  "constant": true,
+                  "inputs": [],
+                  "name": "casinoTax",
+                  "outputs": [
+                    {
+                      "name": "",
+                      "type": "uint256"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "view",
+                  "type": "function"
+                },
+                {
+                  "constant": true,
+                  "inputs": [],
+                  "name": "casinoRate",
+                  "outputs": [
+                    {
+                      "name": "",
+                      "type": "uint8"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "view",
+                  "type": "function"
+                },
+                {
+                  "inputs": [
+                    {
+                      "name": "tax",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "roulette",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "rate",
+                      "type": "uint8"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "nonpayable",
+                  "type": "constructor"
+                },
+                {
+                  "constant": true,
+                  "inputs": [],
+                  "name": "getBalance",
+                  "outputs": [
+                    {
+                      "name": "",
+                      "type": "uint256"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "view",
+                  "type": "function"
+                },
+                {
+                  "constant": false,
+                  "inputs": [],
+                  "name": "refill",
+                  "outputs": [],
+                  "payable": true,
+                  "stateMutability": "payable",
+                  "type": "function"
+                },
+                {
+                  "constant": true,
+                  "inputs": [
+                    {
+                      "name": "player",
+                      "type": "address"
+                    }
+                  ],
+                  "name": "check",
+                  "outputs": [
+                    {
+                      "name": "balance",
+                      "type": "uint256"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "view",
+                  "type": "function"
+                },
+                {
+                  "constant": false,
+                  "inputs": [],
+                  "name": "deposit",
+                  "outputs": [],
+                  "payable": true,
+                  "stateMutability": "payable",
+                  "type": "function"
+                },
+                {
+                  "constant": false,
+                  "inputs": [
+                    {
+                      "name": "amount",
+                      "type": "uint256"
+                    }
+                  ],
+                  "name": "withdraw",
+                  "outputs": [
+                    {
+                      "name": "",
+                      "type": "uint256"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "nonpayable",
+                  "type": "function"
+                },
+                {
+                  "constant": false,
+                  "inputs": [
+                    {
+                      "name": "numbers",
+                      "type": "uint8[]"
+                    },
+                    {
+                      "name": "money",
+                      "type": "uint256[]"
+                    }
+                  ],
+                  "name": "bet",
+                  "outputs": [
+                    {
+                      "name": "winnings",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "randNumber",
+                      "type": "uint8"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "nonpayable",
+                  "type": "function"
+                },
+                {
+                  "constant": true,
+                  "inputs": [
+                    {
+                      "name": "money",
+                      "type": "uint256[]"
+                    }
+                  ],
+                  "name": "_sum",
+                  "outputs": [
+                    {
+                      "name": "sum",
+                      "type": "uint256"
+                    }
+                  ],
+                  "payable": false,
+                  "stateMutability": "pure",
+                  "type": "function"
+                }
+              ]
+
+            
+              var Web3 = require("web3");
+            var web3 = new Web3();
+            web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
+            $scope.web3 = web3;
+
+            var contractAddress = "0x147a57526f1262ce166019912623a856c06066e1"
+            $scope.roulette = web3.eth.contract(abi).at(contractAddress);
+
             $scope.korak = 1
             $scope.cipovi = [1,2,5,10,25,50,100]
 
@@ -172,10 +376,21 @@
                 $scope.pkey = null
             }
             function getBilans(){
-                if($scope.pkey != null)
-                    return $scope.pkey.length*10000;
-                else
+                if($scope.pkey == null)
                     return -2;
+                
+                    $scope.roulette.methods.check($scope.pkey).then(
+                        function successCheck(response) {
+                            console.log("success");
+                            console.log(response);
+                            
+                        },function errorBuy(response) {
+                            console.log("success");
+                            console.log(response);
+                            // ModalsFactory.toaster('error','Somewho took your place on some of flights, your reservations are canceled on that flight. Choose position again on these flights.');    
+                    });
+
+                return $scope.pkey.length*10000;
             }
 
 
@@ -184,11 +399,23 @@
             }
 
             $scope.transfer = function(value){
-                
+                value = parseInt(value);
                 if( $scope.bilans + value < 0 )
                     return;
                 
+                //todo
+
                 $scope.bilans = $scope.bilans + value;
+            }
+
+            $scope.blocked = false;
+            $scope.play = function(){
+                $scope.blocked = true;
+
+                // todo
+                // var getnum = Math.round(Math.random()*36);
+
+                $scope.blocked = false;
             }
 
 

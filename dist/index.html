@@ -34,6 +34,8 @@
 
     <!-- <script src="../src/build.js"></script> -->
     <script src="js/myLibrary/cookie/cookieModul.js"></script>
+    <!-- <script src="../node_modules/web3/dist/web3.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <script src="js/index.js"></script>
     
    
@@ -110,7 +112,7 @@
               <span class="input-group-btn">
                   <button class="btn btn-default btn-success button-controling" type="button" ng-click="transfer(svota)">Доплата</button>
               </span>
-                <input type="text" class="form-control ulazi" placeholder="Свота" ng-model="svota"/>
+                <input type="text" class="form-control ulazi" placeholder="Свота" ng-model="svota" pattern="[0-9]*"/>
                 <span class="input-group-btn">
                     <button class="btn btn-default btn-danger button-controling" type="button" ng-click="transfer(-svota)">Исплата</button>
                 </span>
