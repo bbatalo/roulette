@@ -1,54 +1,88 @@
-pragma solidity ^0.4.24;  // solhint-disable-line
+pragma solidity ^0.4.24;
 
 
 contract Roulette {
-    uint256 public idCounter;  // public for testing purposes, switch to private later?
+
     address public owner;
+    uint256 public casinoTax;
+    uint256 public casinoRoulette;
+    uint8 public casinoRate;
+
+    mapping(address => uint) private balances;
     
-    struct Account {
-        uint256 id;
-        uint256 amount;  // uint256? we should also package variables of the same type together (optimization)
-        string name;
-        
-    }
-    
-    Account[] private players;   // is this public?
+    // add constraints? min amount of deposit, max amount of deposit, etc...
   
     
-    constructor() public {
+    constructor(uint256 tax, uint256 roulette, uint8 rate) public {
         owner = msg.sender;
-        idCounter = 0;
+        casinoTax = tax;
+        casinoRoulette = roulette;
+        casinoRate = rate;
+    }
+    
+    // infinite gas requirement for some reason
+    function getBalance() public view returns (uint256) {
+        require(msg.sender == owner, "Only the owner of the contract can view the balance.");
+        
+        return address(this).balance;
+    }
+    
+    // infinite gas requirement for some reason
+    function refill() public payable {
+        require(msg.sender == owner, "Only the owner of the contract can update the balance.");
     }
 
-    function kill() public {
-        if(msg.sender == owner) selfdestruct(owner);
+    // infinite gas requirement for some reason
+    function check(address player) public view returns (uint balance) {
+        return balances[player];
     }
-
-    // switch to uint?
-    function register(string userName, uint256 userMoney) public returns (string registerMessageInfo, uint256 userId) {
-        bool flagIsUnique;
-        uint acountIndex;
-        (flagIsUnique, acountIndex) = _isUserNameUnique(userName);   // spelling
-        if (flagIsUnique) {
-            Account memory a = Account({ name: userName, amount: userMoney, id: idCounter++ });   // spelling
-            players.push(a);
-            registerMessageInfo = "User is successfully registered.";
-            userId = idCounter;
-        } else {
-            registerMessageInfo = "User isn't registered because his/her username is not unique.";
-            userId = 0;
-        }
+    
+    // infinite gas requirement for some reason
+    function deposit() public payable {
+        balances[msg.sender] = balances[msg.sender] + msg.value;
     }
-
-    // name convention
-    function _isUserNameUnique(string userName) private view returns (bool, uint) {
-        for (uint i = 0; i < players.length; i++) {
-            if (keccak256(abi.encodePacked(players[i].name)) == keccak256(abi.encodePacked(userName))) {
-                return (false, i);
+    
+    // infinite gas requirement for some reason
+    function withdraw(uint amount) public returns (uint256) {
+        require(balances[msg.sender] - amount >= 0);
+        balances[msg.sender] = balances[msg.sender] - amount;
+        
+        msg.sender.transfer(amount - casinoTax);
+        return amount - casinoTax;
+    }
+    
+    
+    function bet(uint8[] numbers, uint256[] money) public returns (uint256 winnings, uint8 randNumber) {
+        require(numbers.length == money.length);
+        
+        uint256 sum = _sum(money);
+        require(sum <= balances[msg.sender]);
+        
+        balances[msg.sender] = balances[msg.sender] - sum;
+        
+        randNumber = _randomGenerator();
+        
+        winnings = 0;
+        
+        for (uint i = 0; i < numbers.length; i++) {
+            if (numbers[i] == randNumber) {
+                winnings += money[i] * casinoRate;
             }
         }
         
-        return (true, 1);
+        msg.sender.transfer(winnings);
+    }
+    
+    function _sum(uint256[] money) public pure returns (uint256 sum) {
+        for (uint i = 0; i < money.length; i++) {
+            sum += money[i];
+        }
+        
+        return sum;
+    }
+    
+    function _randomGenerator() private view returns (uint8 randomNumber) {
+        randomNumber = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % casinoRoulette);
     }
     
     // fix spelling of variable names
@@ -155,16 +189,7 @@ contract Roulette {
         
         return (false, rulletNumbers.length + 1);
     }
-    
-    // naming convention, spelling
-    function randomFunction() private view returns (uint256) {
-      
-        uint256 ranodmNumber;
-        // double conversion? is uint8 neccessary?
-        ranodmNumber = uint8(uint256(keccak256(block.timestamp, block.difficulty)) % 37); // solhint-disable-line
 
-        return ranodmNumber;
-    }
     */
     
 
