@@ -74,7 +74,7 @@ contract Roulette {
         balances[msg.sender] = balances[msg.sender] + winnings;
     }
     
-    function _sum(uint256[] money) public pure returns (uint256 sum) {
+    function _sum(uint256[] money) private pure returns (uint256 sum) {
         for (uint i = 0; i < money.length; i++) {
             sum += money[i];
         }
