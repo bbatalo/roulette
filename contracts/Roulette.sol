@@ -9,6 +9,11 @@ contract Roulette {
     uint8 public casinoRate;
 
     mapping(address => uint) private balances;
+
+    mapping(address => uint) private wins;
+    mapping(address => uint) private loss;
+    mapping(address => uint8) private number;
+    
     
     // add constraints? min amount of deposit, max amount of deposit, etc...
   
@@ -38,25 +43,43 @@ contract Roulette {
     }
     
     // infinite gas requirement for some reason
-    function deposit() public payable {
+    function getWins(address player) public view returns (uint balance) {
+        return wins[player];
+    }
+    // infinite gas requirement for some reason
+    function getLost(address player) public view returns (uint balance) {
+        return loss[player];
+    }
+    // infinite gas requirement for some reason
+    function getNumber(address player) public view returns (uint8 balance) {
+        return number[player];
+    }
+
+    // infinite gas requirement for some reason
+    function deposit() public payable returns (uint balance) {
         balances[msg.sender] = balances[msg.sender] + msg.value;
+        balance =  balances[msg.sender];
+        // return balances[msg.sender];
     }
     
     // infinite gas requirement for some reason
-    function withdraw(uint amount) public returns (uint256) {
+    function withdraw(uint amount) public returns (uint balance) {
         require(balances[msg.sender] - amount >= 0);
         
         balances[msg.sender] = balances[msg.sender] - amount;
         
         msg.sender.transfer(amount - casinoTax);
-        return amount - casinoTax;
+        // return balances[msg.sender];
+        balance =  balances[msg.sender];
     }
     
     
-    function bet(uint8[] numbers, uint256[] money) public returns (uint256 winnings, uint8 randNumber) {
+    function bet(uint8[] numbers, uint[] money) public returns (uint winnings, uint lost, uint8 randNumber, uint newbalance) {
         require(numbers.length == money.length);
         
-        uint256 sum = _sum(money);
+        uint sum = _sum(money);
+        lost = sum;
+
         require(sum <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender] - sum;
@@ -72,9 +95,13 @@ contract Roulette {
         }
         
         balances[msg.sender] = balances[msg.sender] + winnings;
+        newbalance = balances[msg.sender];
+        loss[msg.sender] = lost;
+        wins[msg.sender] = winnings;
+        number[msg.sender] = randNumber;
     }
     
-    function _sum(uint256[] money) private pure returns (uint256 sum) {
+    function _sum(uint[] money) private pure returns (uint sum) {
         for (uint i = 0; i < money.length; i++) {
             sum += money[i];
         }

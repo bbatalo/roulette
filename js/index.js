@@ -12,7 +12,7 @@
         web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
         $scope.web3 = web3;
 
-        var contractAddress = "0x133f9b5f94a219fb76c3321165b6dc8374533db6"
+        var contractAddress = "0x4609b829d2e7055568b5316a2970897af04293de"
 
         $scope.Roulette = web3.eth.contract(RouletteDef.abi);
         $scope.roulette = $scope.Roulette.at(contractAddress);
@@ -189,12 +189,24 @@
         function getBilans(){
             if($scope.pkey == null)
                 return -2;
+            
                 
-                
-                $scope.roulette.check.call(web3.toBigNumber($scope.pkey), function(err, balance) {
+
+                $scope.pkey0x = web3.toBigNumber($scope.pkey)
+                console.log("adress hex: "+ $scope.pkey0x);
+
+                // $scope.roulette.check.call($scope.pkey0x, function(err, balance) {
+                //     console.log(err);
+                //     console.log(balance);
+                //     $scope.bilans = parseInt(balance.c[0]);
+                //     $scope.$apply();
+                // });
+
+                $scope.roulette.check.call($scope.pkey, function(err, balance) {
                     console.log(err);
                     console.log(balance);
-                    $scope.bilans = balance.c[0];
+                    $scope.bilans = parseInt(balance);
+                    $scope.$apply();
                 });
                 
             return $scope.pkey.length*10000;
@@ -210,9 +222,36 @@
             if( $scope.bilans + value < 0 )
                 return;
             
-            //todo
+            console.log("adress hex: "+ $scope.pkey0x);
 
-            $scope.bilans = $scope.bilans + value;
+            if(value>0){
+                $scope.roulette.deposit.sendTransaction({from: $scope.pkey, value: value, gas: 2000000}, function(err, result){
+                    console.log("deposit returned:");
+                    console.log(err);
+                    console.log(parseInt(result));
+                    console.log(result);
+                    if(err == null){
+                        $scope.bilans = getBilans();
+                        // $scope.$apply();
+                    }
+                });
+            
+            }
+            if(value<0){
+                $scope.roulette.withdraw.sendTransaction(-value,{from: $scope.pkey, gas: 2000000}, function(err, result){
+                    console.log("withdraw returned:");
+                    console.log(err);
+                    console.log(parseInt(result));
+                    console.log(result);
+                    if(err == null){
+                        $scope.bilans = getBilans();
+                        // $scope.$apply();
+                    }
+                });
+
+            }
+            $scope.bilans = parseInt(web3.toBigNumber($scope.bilans).plus(value));
+            console.log(typeof($scope.bilans))
         }
 
         $scope.blocked = false;
