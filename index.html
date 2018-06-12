@@ -34,6 +34,7 @@
 
     <!-- <script src="../src/build.js"></script> -->
     <script src="js/myLibrary/cookie/cookieModul.js"></script>
+    <script src="js/myLibrary/modals/modalsModule.js"></script>
     <!-- <script src="../node_modules/web3/dist/web3.js"></script> -->
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <!-- <script src="js/index.js"></script> -->
@@ -46,6 +47,7 @@
 </head>
 <body ng-controller="svekontroler as sve" class="container">
 
+    
           <div class="col-md-5" id="gameboard">
               
                   <div class="col-md-4 nopadding">
@@ -56,7 +58,7 @@
               
                   <div class="col-md-4 nopadding">
                     <button class="btn button-expanded zeleno" ng-click="numClick(0)">
-                        0 <span class="label label-default" ng-if="bet[0] && bet[0]>0">{{bet[0]}}</span>
+                        0 <span class="label label-default" ng-if="bet[0] && bet[0]>0">{{unitInput(bet[0])}}</span>
                     </button>
                   </div>
                   <div class="col-md-4 nopadding">
@@ -68,7 +70,7 @@
                 
                 <div class="col-md-4 nopadding" ng-repeat="polje in tabela">
                   <button class="btn button-expanded" ng-class='{crveno: polje["col"]=="r", crno: polje["col"]=="b" }'  ng-click="numClick(polje['num'])">
-                    {{polje['num']}} <span class="label label-default" ng-if="bet[polje['num']] && bet[polje['num']]>0">{{bet[polje['num']]}}</span>
+                    {{polje['num']}} <span class="label label-default" ng-if="bet[polje['num']] && bet[polje['num']]>0">{{unitInput(bet[polje['num']])}}</span>
                   </button>
                 </div>
 
@@ -91,7 +93,7 @@
             <h3 class="labela" ng-show="pkey"> Ваш јавни кључ : {{pkey}}</h3>
             <div class="input-group" ng-show="pkey">
                 <span class="input-group-addon labela">
-                    На рачуну имате: <em></em><strong>{{bilans}}</strong></em> wei-a!
+                    На рачуну имате: <em></em><strong>{{unitInput(bilans)}}</strong></em>!
                 </span>
                 <button class="btn btn-default form-control btn-danger button-controling" type="button" ng-click="logout()">Одјава</button>
             </div>
@@ -132,12 +134,25 @@
             <br><br>
             <div class="input-group" ng-show="pkey">
                 <span class="input-group-addon labela">
-                    Уложено <em></em><strong>{{total}}</strong></em> од укупно <em></em><strong>{{bilans}}</strong></em> wei-a!
+                    Уложено <em></em><strong>{{unitInput(total)}}</strong></em> од укупно <em></em><strong>{{unitInput(bilans)}}</strong></em>!
                 </span>
-                <button class="btn form-control btn-info button-controling" type="button">Покрени</button>
+                <button class="btn form-control btn-info button-controling" type="button" ng-click="play()">Покрени</button>
             </div>
 
+                <form class="form-inline" ng-show="pkey">
+                    <label for="units" class="input-group-addon labela"> Приказуј у:  </label>
+                    <div id="units" class="btn-group" role="group" >
+                        <button ng-repeat="unt in units.list"
+                            type="button" class="btn btn-warning" ng-class="{active:units.key==unt['key']}"
+                            ng-click="units.key=unt['key']; units.val=unt['val']">
+                            {{unt["key"]}}
+                        </button>
+                    </div>
+              </form>
           </div> <!-- controlboard-->
+        
+       
+
 
 </body>
 </html>

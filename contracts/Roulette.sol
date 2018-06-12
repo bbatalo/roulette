@@ -15,6 +15,7 @@ contract Roulette {
     mapping(address => uint8) private number;
     
     
+    
     // add constraints? min amount of deposit, max amount of deposit, etc...
   
     
@@ -55,13 +56,21 @@ contract Roulette {
         return number[player];
     }
 
+    event Deposit(
+        uint newbalance
+    );
     // infinite gas requirement for some reason
     function deposit() public payable returns (uint balance) {
         balances[msg.sender] = balances[msg.sender] + msg.value;
         balance =  balances[msg.sender];
         // return balances[msg.sender];
+        emit Deposit(balance);
     }
-    
+
+    event Withdraw(
+        uint newbalance
+    );
+
     // infinite gas requirement for some reason
     function withdraw(uint amount) public returns (uint balance) {
         require(balances[msg.sender] - amount >= 0);
@@ -71,9 +80,17 @@ contract Roulette {
         msg.sender.transfer(amount - casinoTax);
         // return balances[msg.sender];
         balance =  balances[msg.sender];
+        emit Withdraw(balance);
     }
-    
-    
+
+
+    event Bet(
+        uint winnings,
+        uint lost,
+        uint8 randNumber,
+        uint newbalance
+    );
+
     function bet(uint8[] numbers, uint[] money) public returns (uint winnings, uint lost, uint8 randNumber, uint newbalance) {
         require(numbers.length == money.length);
         
@@ -99,6 +116,7 @@ contract Roulette {
         loss[msg.sender] = lost;
         wins[msg.sender] = winnings;
         number[msg.sender] = randNumber;
+        emit Bet(winnings, lost, randNumber, newbalance);
     }
     
     function _sum(uint[] money) private pure returns (uint sum) {

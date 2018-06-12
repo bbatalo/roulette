@@ -1,9 +1,9 @@
 (function(){
     "use strict";
 
-    var modul = angular.module('app', ['cookieModul']);
+    var modul = angular.module('app', ['cookieModul','modalsLibraryModule']);
 
-    modul.controller('svekontroler',['$scope','$http','RedirectionFactory', function($scope, $http, RedirectionFactory) {
+    modul.controller('svekontroler',['$scope','$http','RedirectionFactory','ModalsFactory', function($scope, $http, RedirectionFactory,ModalsFactory) {
         
         var RouletteDef = require("./../build/contracts/Roulette.json");
 
@@ -12,11 +12,57 @@
         web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
         $scope.web3 = web3;
 
-        var contractAddress = "0x4609b829d2e7055568b5316a2970897af04293de"
+        var contractAddress = "0xd6219f60c036185ae4017fcdc4c336e1966c0ad3";
 
         $scope.Roulette = web3.eth.contract(RouletteDef.abi);
         $scope.roulette = $scope.Roulette.at(contractAddress);
         console.log($scope.roulette);
+
+        var betEvent = $scope.roulette.Bet({fromBlock: 0, toBlock: 'latest'});
+        betEvent.watch(function(error, result){
+            // console.log("watchingovanje  bet.....");
+            // console.log(error);
+            // console.log(result);
+            $scope.rz = result;
+
+            // console.log(`NUMBER: ${parseInt(result.args.randNumber)} \n Total investment: ${parseInt(result.args.lost)}, total income: ${parseInt(result.args.winnings)}. \n New balance ${parseInt(result.args.newbalance)}`);
+            if($scope.blocked){
+                var printNumber = parseInt(result.args.randNumber);
+                var printLost = $scope.unitInput(parseInt(result.args.lost));
+                var printWin = $scope.unitInput(parseInt(result.args.winnings));
+                var printNewBalance = $scope.unitInput(parseInt(result.args.newbalance));
+                ModalsFactory.toaster('info',
+                    `Пало: ${printNumber} <br> 
+                    Улог: ${printLost} <br> 
+                    Добитак: ${printWin} <br> 
+                    Ваше стање: ${printNewBalance}`);
+                $scope.blocked = false;
+            }
+            
+            $scope.bilans = parseInt(result.args.newbalance);
+            $scope.clearTable();
+            $scope.$apply();
+        });
+
+        var withdrawEvent = $scope.roulette.Withdraw({fromBlock: 0, toBlock: 'latest'});
+        withdrawEvent.watch(function(error, result){
+            // console.log("watchingovanje withdraw.....");
+            // console.log(error);
+            // console.log(result);
+            // $scope.wz = result;
+            $scope.bilans = parseInt( result.args.newbalance  );
+            $scope.$apply();
+        });
+
+        var depositEvent = $scope.roulette.Deposit({fromBlock: 0, toBlock: 'latest'});
+        depositEvent.watch(function(error, result){
+            // console.log("watchingovanje deposit.....");
+            // console.log(error);
+            // console.log(result);
+            // $scope.dz = result;
+            $scope.bilans = parseInt( result.args.newbalance  );
+            $scope.$apply();
+        });
 
         $scope.korak = 1
         $scope.cipovi = [1,2,5,10,25,50,100]
@@ -172,10 +218,10 @@
             }
         ];
         
+
         $scope.RedirectionFactory = RedirectionFactory;
         $scope.pkey = RedirectionFactory.getKey();
         $scope.bilans = getBilans();
-
         $scope.login = function(){
             $scope.pkey = $scope.newpk;
             RedirectionFactory.setKey($scope.newpk)
@@ -189,26 +235,16 @@
         function getBilans(){
             if($scope.pkey == null)
                 return -2;
-            
-                
 
                 $scope.pkey0x = web3.toBigNumber($scope.pkey)
                 console.log("adress hex: "+ $scope.pkey0x);
 
-                // $scope.roulette.check.call($scope.pkey0x, function(err, balance) {
-                //     console.log(err);
-                //     console.log(balance);
-                //     $scope.bilans = parseInt(balance.c[0]);
-                //     $scope.$apply();
-                // });
-
                 $scope.roulette.check.call($scope.pkey, function(err, balance) {
-                    console.log(err);
-                    console.log(balance);
+                    // console.log(err);
+                    // console.log(balance);
                     $scope.bilans = parseInt(balance);
                     $scope.$apply();
                 });
-                
             return $scope.pkey.length*10000;
         }
 
@@ -219,39 +255,28 @@
 
         $scope.transfer = function(value){
             value = parseInt(value);
-            if( $scope.bilans + value < 0 )
+            value = value * $scope.units.val;
+
+            if( $scope.bilans + value < 0 ){
+                ModalsFactory.toaster("error","Немате довољно средстава за ову исплату.");
                 return;
+            }
+                
             
             console.log("adress hex: "+ $scope.pkey0x);
 
             if(value>0){
-                $scope.roulette.deposit.sendTransaction({from: $scope.pkey, value: value, gas: 2000000}, function(err, result){
-                    console.log("deposit returned:");
-                    console.log(err);
-                    console.log(parseInt(result));
-                    console.log(result);
-                    if(err == null){
-                        $scope.bilans = getBilans();
-                        // $scope.$apply();
+                $scope.roulette.deposit.sendTransaction({from: $scope.pkey, value: value, gas: 2000000},function(err,result){
+                    if(err!=null){
+                        ModalsFactory.toaster("error","Немате довољно средстава за ову уплату.");
                     }
                 });
-            
             }
             if(value<0){
-                $scope.roulette.withdraw.sendTransaction(-value,{from: $scope.pkey, gas: 2000000}, function(err, result){
-                    console.log("withdraw returned:");
-                    console.log(err);
-                    console.log(parseInt(result));
-                    console.log(result);
-                    if(err == null){
-                        $scope.bilans = getBilans();
-                        // $scope.$apply();
-                    }
-                });
-
+                $scope.roulette.withdraw.sendTransaction(-value,{from: $scope.pkey, gas: 2000000});
             }
-            $scope.bilans = parseInt(web3.toBigNumber($scope.bilans).plus(value));
-            console.log(typeof($scope.bilans))
+            // $scope.bilans = parseInt(web3.toBigNumber($scope.bilans).plus(value));
+            // console.log(typeof($scope.bilans))
         }
 
         $scope.blocked = false;
@@ -259,15 +284,22 @@
             $scope.blocked = true;
 
             // todo
-            // var getnum = Math.round(Math.random()*36);
+            var topass = $scope.bet2lists();
+            $scope.roulette.bet.sendTransaction(topass["numbers"],topass["values"],{from:$scope.pkey,gas:3000000});
+            // a.roulette.bet.sendTransaction(topass["numbers"],topass["values"],{from:a.pkey,gas:3000000},function(err,result){
+            //     console.log(err);
+            //     console.log(result);
+            // })
 
-            $scope.blocked = false;
+            // $scope.blocked = false;
         }
+
+
 
 
         $scope.minus = false;
         $scope.numClick = function(broj){
-            var svota = $scope.korak;
+            var svota = $scope.korak * $scope.units.val;
             if ($scope.minus)
                 svota = - svota;
 
@@ -277,8 +309,10 @@
 
                     
             var newtotal = $scope.total + svota
-            if (newtotal > $scope.bilans)
-                return
+            if (newtotal > $scope.bilans){
+                svota = svota - (newtotal - $scope.bilans);
+                newtotal = $scope.bilans;
+            }
             if(brojval+svota < 0)
                 svota = -brojval;
             
@@ -290,8 +324,69 @@
             $scope.bet = {};
             $scope.total = 0;
         }
+
+
+        $scope.bet2lists = function(){
+            var l1 = [];
+            var l2 = [];
+            for(var index in $scope.bet){
+                l1.push(parseInt(index));
+                l2.push($scope.bet[index]);
+            }
+            return {
+                "numbers":l1,
+                "values":l2
+            };
+        }
     
+        $scope.units = {
+            "key" : "wei",
+            "val": 1,
+            "list": [
+                {
+                    "key":"wei",
+                    "val":1
+                },
+                {
+                    "key":"Kwei",
+                    "val":1000
+                },
+                {
+                    "key":"Mwei",
+                    "val":1000000
+                },
+                {
+                    "key":"Gwei",
+                    "val":1000000000
+                },
+                {
+                    "key":"microether",
+                    "val":1000000000000
+                },
+                {
+                    "key":"milliether",
+                    "val":1000000000000000
+                },
+                {
+                    "key":"ether",
+                    "val":1000000000000000000
+                }
+            ]
+    
+        };
+        
+        
+        $scope.unitInput = function(value){
+            return `${Math.round(value/$scope.units.val*100)/100} ${$scope.units.key}-a`;
+        }
+        $scope.unitOutput = function(value){
+            return value;
+        }
+        
+
     }]); 
+
+
 
     // proba.controller('restPokusaj', function($scope, $http) {
     //     $http.get('http://localhost:8080/pokusaj/1').
