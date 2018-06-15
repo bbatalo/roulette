@@ -135,7 +135,7 @@ Automatic tests are not provided.
 
 ## Deployment
 
-Deployment to production servers are not supported in this version.
+Deployment to production servers is not supported in this version.
 
 ## Authors
 
