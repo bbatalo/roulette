@@ -140,5 +140,7 @@ Deployment to production servers are not supported in this version.
 ## Authors
 
 Biljana Andjelic - <https://github.com/biljanaandjelic>
+
 Maksim Lalic - <https://github.com/LaMaksim>
+
 Bojan Batalo - <https://github.com/bbatalo>
