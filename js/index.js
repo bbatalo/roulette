@@ -12,7 +12,7 @@
         web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
         $scope.web3 = web3;
 
-        var contractAddress = "0xc8fa6ee7a10e20ee4d3bad40df44cf6817f74e22";
+        var contractAddress = "INSERT CONTRACT ADDRESS";
 
         $scope.Roulette = web3.eth.contract(RouletteDef.abi);
         $scope.roulette = $scope.Roulette.at(contractAddress);
